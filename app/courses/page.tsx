@@ -1,13 +1,14 @@
 import { fetchCourses } from "@/lib/api/courses";
-import { CourseCard } from "./components/CourseCard";
+import { CoursesGrid } from "./components/CoursesGrid";
 import { Course } from "@/types/course";
+import { PAGE_SIZE } from "@/lib/constants";
 
 export default async function CoursesPage() {
   let courses: Course[] = [];
   let error: string | null = null;
 
   try {
-    courses = await fetchCourses();
+    courses = await fetchCourses({ limit: PAGE_SIZE, offset: 0 });
   } catch (e) {
     error = e instanceof Error ? e.message : "Failed to load courses";
   }
@@ -31,19 +32,7 @@ export default async function CoursesPage() {
           </div>
         )}
 
-        {courses.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        ) : !error ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center dark:border-gray-700 dark:bg-zinc-900">
-            <h3 className="mt-2 text-sm font-semibold text-gray-900 dark:text-white">
-              No courses yet
-            </h3>
-          </div>
-        ) : null}
+        {!error && <CoursesGrid courses={courses} />}
       </div>
     </div>
   );
